@@ -1,0 +1,12 @@
+.top {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  display: block;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+}
+/*.top:hover{background: url("{% static 'blog/img/top.gif' %}") no-repeat ;*/
+
+/*}*/
