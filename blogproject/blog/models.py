@@ -8,16 +8,22 @@ from collections import defaultdict
 #blog/models.py
 # Create your models here.
 
+
 # 文章分类
 class Category(models.Model):   # 文章分类
     name = models.CharField(max_length=100)
+
     def __str__(self):
         return self.name
+
+
 # 文章标签
 class Tag(models.Model):
-    name=models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
+
     def __str__(self):
         return self.name
+
 
 class PostManager(models.Manager):
     """
@@ -32,27 +38,31 @@ class PostManager(models.Manager):
             date_dict[d.year].append(d.month)
         # 模板不支持defaultdict，因此我们把它转换成一个二级列表，由于字典转换后无序，因此重新降序排序
         return sorted(date_dict.items(), reverse=True)
+
+
 class Post(models.Model):  #自定义了 Manger 后需要在 model 中显示地指定它：
     # 文章标题
     objects = PostManager()  # 使用默认的 objects 作为 manager的名字
     title = models.CharField(max_length=70,verbose_name="文章标题")
-    body= models.TextField(verbose_name="文章正体")
-    created_time=models.DateTimeField(verbose_name="创建时间")
-    modified_time=models.DateTimeField(verbose_name="修改时间",blank=True)
-    excerpt = models.CharField(max_length=200,blank=True)
+    body = models.TextField(verbose_name="文章正体")
+    created_time = models.DateTimeField(verbose_name="创建时间")
+    modified_time = models.DateTimeField(verbose_name="修改时间", blank=True)
+    excerpt = models.CharField(max_length=200, blank=True)
     views = models.PositiveIntegerField(default=0)  # 记录文章阅读量
     # 文章类别 category为外键 与Category关联
-    category=models.ForeignKey(Category)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     # 文章标签 tag为 多对多的关系
-    tag=models.ManyToManyField(Tag)
-    author = models.ForeignKey(User,blank=True)
+    tag = models.ManyToManyField(Tag)
+    author = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
+
     def __str__(self):
         return self.title
-    def get_absolute_url(self): # 获取访问的绝对地址
-        return reverse('blog:detail',kwargs={'pk':self.pk})
+
+    def get_absolute_url(self):  # 获取访问的绝对地址
+        return reverse('blog:detail', kwargs={'pk': self.pk})
 
     def increase_views(self):
-        self.views +=1
+        self.views += 1
         self.save(update_fields=['views'])  # 只更新数据库中views字段的值
 
     def save(self,*args,**kwargs):  # 重写django的save方法
